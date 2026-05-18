@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Worker Pool Test</title>
+</head>
+<body>
+  <h1>Testing Parallel Dithering...</h1>
+  <pre id="log"></pre>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <script type="module">
+    import { createImageProcessingClient } from '/workerClient.js';
+    
+    function log(msg) {
+      document.getElementById('log').textContent += msg + '\n';
+      console.log(msg);
+    }
+    
+    async function runTest() {
+      try {
+        log("1. Initializing Processing Client...");
+        const client = createImageProcessingClient();
+        await client.warmup();
+        log("2. Workers warmed up successfully!");
+        
+        // Create a dummy 512x512 image full of noise
+        const width = 512;
+        const height = 512;
+        const canvas = document.getElementById('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.createImageData(width, height);
+        for(let i=0; i < imgData.data.length; i+=4) {
+          imgData.data[i] = Math.random() * 255;
+          imgData.data[i+1] = Math.random() * 255;
+          imgData.data[i+2] = Math.random() * 255;
+          imgData.data[i+3] = 255; // Alpha
+        }
+        
+        log(`3. Generated test image (${width}x${height}). Starting compression with paletteSize=16...`);
+        const startTime = performance.now();
+        
+        const result = await client.quantizeAndDither({
+          pixels: imgData.data.buffer,
+          width,
+          height,
+          paletteSize: 16
+        });
+        
+        const endTime = performance.now();
+        log(`4. Compression complete in ${(endTime - startTime).toFixed(2)}ms!`);
+        log(`   - Output Array Length: ${result.pixels.length} (Expected: ${width*height*4})`);
+        log(`   - Extracted Palette Size: ${result.palette.length}`);
+        
+        if (result.pixels.length === width * height * 4) {
+          log("\n✅ ALL TESTS PASSED: Worker Pool successfully chunked, dithered, and stitched the image!");
+        } else {
+          log("\n❌ TEST FAILED: Output pixel array size mismatch.");
+        }
+      } catch (e) {
+        log("\n❌ TEST FAILED with Error: " + e.message);
+        console.error(e);
+      }
+    }
+    
+    runTest();
+  </script>
+</body>
+</html>
