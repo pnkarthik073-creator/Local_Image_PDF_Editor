@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Image & PDF Tool</title>
+  <meta name="theme-color" content="#4b64f2" />
+  <meta name="description" content="Client-side image and PDF editor with local processing and offline-ready support." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
+
+  <script type="module" crossorigin src="/assets/index-ByGCqhyH.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DEfRahVk.css">
+</head>
+<body>
+  <input
+    type="file"
+    id="fileInput"
+    accept="image/*,application/pdf"
+    multiple
+    hidden
+  />
+
+  <!-- WELCOME MODE -->
+  <section id="welcome" class="page active">
+    <h1>Local Image & PDF Tool</h1>
+    <p>
+      Resize, compress and convert images or PDFs locally.
+      No uploads. 100% private.
+    </p>
+    <div class="actions" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <button id="startBtn" class="big-btn">Start Editing</button>
+      <button id="installAppBtn" class="big-btn outline" style="display: none; background: #fff; color: #4b64f2; border: 2px solid #4b64f2;">Install as Native App</button>
+    </div>
+  </section>
+
+  <!-- EDITOR MODE -->
+  <section id="editor" class="page">
+    <!-- Fixed Header -->
+    <header id="appHeader" class="topbar">
+      <button id="backBtn" class="icon-btn" title="Back">←</button>
+      <h2 id="headerTitle">Image & PDF Editor</h2>
+      <button id="themeToggle" class="icon-btn" title="Toggle Dark mode">🌙</button>
+    </header>
+
+    <!-- Editor Body -->
+    <div class="editor-body">
+
+      <!-- Tools -->
+      <div class="tool-bar action-btn">
+        <button id="addBtn" class="add-btn action-btn">
+          <span class="plus"></span> Add
+        </button>
+        <button id="rotateBtn" class="rotate-btn action-btn" disabled>⟳ Rotate</button>
+        <button id="editBatchBtn" class="rotate-btn action-btn" disabled>
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58zM20.71 7.04a.996.996 0 0 0 0-1.41L18.37 3.29a.996.996 0 1 0-1.41 1.41l2.34 2.34c.39.39 1.02.39 1.41 0z" fill="currentColor"/>
+            </svg>
+          </span>
+          Edit
+        </button>
+      </div>
+
+      <button id="exportBtn" class="export-btn action-btn primary" disabled>📥 Export</button>
+
+      <div class="gallery-header">
+        <div class="left">
+          <button id="selectToggle" class="action-btn" hidden>Select all</button>
+          <div class="info-text">
+            <div id="addedInfo"></div>
+            <div id="selectedInfo"></div>
+          </div>
+        </div>
+
+        <button id="removeBtn" hidden class="action-btn danger" disabled>Remove</button>
+        
+      </div>
+
+
+      <!-- Gallery -->
+      <div id="gallery" class="gallery"></div>
+
+      <!-- Drop hint (page-centered) -->
+      <div class="drop-hint-wrapper">
+        <button id="dropHint" class="drop-hint">
+          <span class="file-icon">📁</span><br>
+          <span class="drop-text">
+            Drop images or PDFs /<br>
+            <span class="drop-text">Click to add</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div id="global-tooltip" class="global-tooltip"></div>
+
+  <div id="galleryExportDialog" class="export-dialog-overlay" style="display: none;">
+    <div class="export-dialog-container">
+      <div class="export-dialog-header">
+        <h2>Export Selection</h2>
+        <button class="export-dialog-close" id="galleryExportDialogClose">&times;</button>
+      </div>
+
+      <div class="export-dialog-content">
+        <div class="export-section">
+          <label class="export-label">Available Export Options</label>
+          <div id="galleryExportSummary" class="export-helper-text"></div>
+        </div>
+
+        <div class="export-section">
+          <label class="export-label">Export Format</label>
+          <div class="export-format-grid" id="galleryExportFormatGrid"></div>
+        </div>
+
+        <div class="export-section export-info">
+          <div id="galleryExportFileInfo">
+            <span id="galleryExportItemCount">Items: 0</span>
+            <span id="galleryExportEstimatedSize">Est. Size: calculating...</span>
+          </div>
+        </div>
+
+        <div id="galleryExportProgressContainer" class="export-progress-container" style="display: none;">
+          <div class="export-progress-label">
+            <span id="galleryExportProgressText">Preparing export...</span>
+            <span id="galleryExportProgressPercent">0%</span>
+          </div>
+          <div class="export-progress-bar">
+            <div class="export-progress-fill" id="galleryExportProgressFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-dialog-footer">
+        <button class="export-btn-cancel" id="galleryExportBtnCancel">Cancel</button>
+        <button class="export-btn-export" id="galleryExportBtnDoExport">Export</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

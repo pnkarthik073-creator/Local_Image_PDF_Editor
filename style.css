@@ -1,0 +1,1135 @@
+:root {
+  --bg: #f4f4f4;
+  --fg: #111;
+  --card: #ffffff;
+  --accent: #4a6cf7;
+  --header-h: 52px;
+  --edge-gap: 8px;
+  --toolbar-h: 46px;
+}
+
+[data-theme="dark"] {
+  --bg: #121212;
+  --fg: #eee;
+  --card: #1e1e1e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Poppins, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.global-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+}
+
+#editor.active~.global-toggle,
+#editor.active+.global-toggle {
+  position: fixed;
+  top: calc(var(--header-h) / 2);
+  transform: translateY(-50%);
+}
+
+#themeToggle {
+  justify-self: end;
+}
+
+#welcome.active~header #themeToggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+}
+
+#appHeader {
+  display: none;
+}
+
+#editor.active #appHeader {
+  display: grid;
+}
+
+.canvas-area {
+  margin-top: 24px;
+  background: var(--card);
+  border-radius: 14px;
+}
+
+.page {
+  display: none;
+  min-height: 100vh;
+}
+
+.page.active {
+  display: flex;
+}
+
+#welcome {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+#welcome p {
+  max-width: 380px;
+  margin: 12px 0 24px;
+  opacity: 0.85;
+}
+
+#welcome button {
+  padding: 14px 22px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+#welcome .global-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+}
+
+#editor {
+  flex-direction: column;
+  background: var(--bg);
+  user-select: none;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  padding: 0 12px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  background: var(--card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  text-align: center;
+}
+
+.topbar h2 {
+  margin: 0;
+  justify-self: center;
+}
+
+.editor-content {
+  padding: 16px;
+  min-height: 300px;
+  background: var(--card);
+  border-radius: 10px;
+}
+
+.editor-body {
+  margin-top: var(--header-h);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.tool-bar {
+  display: flex;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  position: sticky;
+  top: var(--header-h);
+  z-index: 20;
+  gap: 8px;
+  padding: 8px 8px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.tool-bar button {
+  pointer-events: auto;
+}
+
+.add-btn {
+  margin-left: 8px;
+}
+
+.add-btn,
+.rotate-btn {
+  height: 30px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.export-btn {
+  position: fixed;
+  right: 8px;
+  bottom: 8px;
+  height: 30px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-right: 8px;
+  z-index: 20;
+}
+
+button {
+  user-select: none;
+}
+
+.plus {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.tool-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.export-helper-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg);
+  opacity: 0.75;
+}
+
+.plus::before,
+.plus::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.plus::before {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.plus::after {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: 1;
+  padding: 4px 16px;
+}
+
+.selection-rect {
+  position: fixed;
+  border: 1px dashed var(--accent);
+  background: rgba(74, 108, 247, 0.15);
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 4px;
+}
+
+.thumb {
+  position: relative;
+  height: 140px;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: z-index 0s;
+  z-index: 10;
+}
+
+.thumb[data-type="image"] {
+  min-width: 116px;
+  max-width: 200px;
+  background: #d5d5d5 !important;/*E0E0E0*/
+  box-shadow: none !important; /* Remove outer shadow */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;       /* Ensure buttons don't get cut off */
+}
+
+[data-theme="dark"] .thumb[data-type="image"]{
+  background: #4a4a4a !important;
+}
+
+/* 4. Hug the background and shadow tightly to the actual image */
+.thumb[data-type="image"] img {
+  width: auto;             /* Forces element to hug the image tightly */
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--card); 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.thumb img {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+.thumb[data-type="pdf"] {
+  width: 168px;
+  height: 140px;
+  background:  #E0E0E0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  overflow: hidden; 
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+[data-theme="dark"] .thumb[data-type="pdf"]{
+  background: #4a4a4a !important;
+}
+
+/* This tells the high-res canvas to shrink down and fit perfectly inside the box */
+.thumb[data-type="pdf"] canvas.pdf-preview {
+  max-width: 100%;
+  min-height: 100%;
+  object-fit: contain; /* Ensures the whole page fits without stretching */
+  display: block;
+}
+
+/* (Optional) If you were using .pdf-thumb somewhere else, keep it clean like this: */
+.pdf-thumb {
+  max-width: 168px;
+  background: #c0392b;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================
+   THUMBNAIL SELECT BOX (CHECKBOX)
+   ========================================= */
+
+/* 1. Base State: Hidden, round, 6px from top/left */
+.thumb .select-box {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%; /* Makes it perfectly round */
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.3); /* Translucent background */
+  opacity: 0; /* Hidden by default */
+  transition: all 0.2s ease;
+  z-index: 5;
+  cursor: pointer;
+  
+  /* Flexbox centers the checkmark perfectly */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* 2. Hovering the Thumbnail: Show the translucent empty box */
+.thumb:hover .select-box {
+  opacity: 1;
+}
+
+/* 3. Hovering the Box itself: Grow slightly and darken */
+.thumb .select-box:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* 4. Selected State: Solid Accent Color with Glow */
+.thumb.selected .select-box {
+  opacity: 1; /* Keep it permanently visible */
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* 5. The Checkmark: Empty by default, shows '✓' when selected */
+.thumb .select-box::after {
+  content: '';
+}
+
+.thumb.selected .select-box::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.thumb.selected {
+  outline: 2px solid var(--accent);
+}
+
+.thumb-btn {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.48);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.thumb:hover .thumb-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.thumb .close-btn {
+  top: 6px;
+  right: 6px;
+}
+
+.thumb .edit-btn {
+  bottom: 6px;
+  right: 6px;
+}
+
+.close-btn::before,
+.close-btn::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.close-btn::before {
+  transform: rotate(45deg);
+}
+
+.close-btn::after {
+  transform: rotate(-45deg);
+}
+
+.edit-btn::before {
+  content: "";
+  width: 14px;
+  height: 3px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  display: block;
+  border-radius: 2px;
+}
+
+.drop-hint-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.drop-hint {
+  margin-top: 120px;
+  padding: 28px 200px;
+  border: 2px dashed var(--accent);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  width: auto;
+  transition: opacity 0.25s ease,
+    transform 0.25s ease,
+    max-height 0.25s ease,
+    margin 0.25s ease,
+    padding 0.25s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.file-icon {
+  font-size: 40px;
+  display: block;
+}
+
+.drop-text,
+.drop-sub {
+  text-align: center;
+  line-height: 1.4;
+  font-size: 14px;
+  min-width: 160px;
+}
+
+.drop-hint:hover {
+  opacity: 1;
+}
+
+body,
+.drop-hint {
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.drop-hint.hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.editor-body,
+.editor-content,
+.canvas-area {
+  position: relative;
+}
+
+body.drag-welcome {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+body.drag-editor-empty .drop-hint {
+  border-color: var(--accent);
+  background: rgba(120, 120, 117, 0.463);
+  transform: scale(1.04);
+}
+
+body.drag-editor-filled {
+  background: rgba(142, 154, 97, 0.356);
+}
+
+body.drag-editor-filled .drop-hint {
+  border-color: #e20909;
+}
+
+.drop-hint.collapsed {
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  overflow: hidden;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: calc(var(--header-h) + 6px);
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+
+body.drag-editor-empty::after,
+body.drag-editor-filled::after {
+  opacity: 1;
+  background: rgba(101, 95, 95, 0.178);
+}
+
+.gallery-header {
+  position: sticky;
+  top: calc(var(--header-h) + var(--toolbar-h));
+  z-index: 15;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.gallery-header>* {
+  pointer-events: auto;
+}
+
+.gallery-header .left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.info-text {
+  color: #ffffff;
+  font-size: 13px;
+  opacity: 1;
+  line-height: 1.4;
+}
+
+#removeBtn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.extend-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 18px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: 6px;
+  transform: translateY(-50%);
+}
+
+body.drag-selecting {
+  cursor: crosshair;
+}
+
+#selectToggle {
+  background: #cac5c5;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+#removeBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.move-btn {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.thumb:hover .move-btn {
+  opacity: 1;
+}
+
+.drag-proxy {
+  position: fixed;
+  pointer-events: none;
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 2000;
+  transform: scale(1.05);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, .35);
+  opacity: 0.9;
+}
+
+.drag-proxy img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #222;
+  opacity: 0.85;
+}
+
+.proxy-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.thumb.reordering .thumb-btn,
+.thumb.reordering .move-btn,
+.thumb.reordering .extend-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.thumb.reordering .thumb-btn,
+.thumb.reordering .move-btn {
+  display: none;
+}
+
+.thumb.placeholder {
+  background: rgba(74, 108, 247, 0.12);
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  box-shadow: none;
+  outline: none;
+  pointer-events: none;
+  flex: 0 0 auto;
+  min-width: 140px;
+  min-height: 140px;
+  box-sizing: border-box;
+}
+
+.sidebar-top-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.copy-action-btn {
+  background: rgb(0, 0, 0, 0.48) !important;
+  left: 6px !important;
+  right: 40px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.is-reordering {
+  cursor: grabbing !important;
+}
+
+body[style*="copy"] .is-reordering {
+  cursor: copy !important;
+}
+
+.thumb:hover .copy-action-btn {
+  opacity: 1;
+}
+
+.hidden-thumb {
+  display: none !important;
+}
+
+.thumb.is-expanded {
+  border: 2px dashed var(--accent);
+  opacity: 0.6;
+}
+
+.thumb.is-child-page {
+  position: relative;
+  transform: scale(0.95);
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.thumb.is-child-page::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.thumb.is-child-page::before {
+  content: "↳";
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  color: var(--accent);
+  font-size: 20px;
+}
+
+#selectedInfo {
+  position: fixed;
+  top: 104px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.500);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+#selectedInfo:empty {
+  display: none;
+  opacity: 0;
+}
+
+#dragCancelZone {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(150%);
+  background: rgba(255, 69, 58, 0.9);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+  pointer-events: all;
+  border: 2px solid white;
+}
+
+#dragCancelZone.active {
+  transform: translateX(-50%) translateY(0);
+}
+
+#dragCancelZone.hovered {
+  transform: translateX(-50%) translateY(0) scale(1.1);
+  background: rgb(255, 40, 30);
+}
+
+/* 1. PDF Marker & Page Badge Common Style */
+.pdf-marker,
+.page-badge {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  /* Higher than image/canvas */
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: help;
+  /* Match the look of your other transparent buttons */
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: none;
+  border: none;
+}
+
+.page-badge {
+  background: var(--accent-color, #666);
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: 14px;
+}
+
+.pdf-accent-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-color, #ccc);
+}
+
+.global-tooltip {
+  position: fixed;
+  /* Bypasses all thumb containers */
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  /* Always on very top */
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  pointer-events: none;
+  /* Mouse ignores it */
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  /* Text Wrapping - No more side clipping */
+  max-width: 180px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.global-tooltip.active {
+  opacity: 1;
+}
+
+/* 3. PDF Three-Dot Menu Styling */
+.pdf-menu-container {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.pdf-menu-btn {
+  background: rgba(0, 0, 0, 0.48);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pdf-menu-btn:hover {
+  background: var(--accent);
+}
+
+.pdf-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 50;
+}
+
+.pdf-menu-dropdown.show {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pdf-menu-option {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pdf-menu-option:hover {
+  background: var(--accent);
+}
+
+.pdf-menu-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --- FORMAT & PAGE BADGE FOR IMAGES --- */
+.format-badge {
+  position: absolute;
+  top: 6px;
+  left: 46%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 12px;
+  z-index: 25;
+  pointer-events: auto; 
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: transform 0.2s ease-out; /* Added ease-out for smoother animation */
+  white-space: nowrap;
+  
+  /* FIX: Forces hardware acceleration so text doesn't jitter/shift during scale */
+  backface-visibility: hidden; 
+  -webkit-font-smoothing: antialiased;
+}
+
+.format-badge:hover {
+  transform: translateX(-50%) scale(1.05) translateZ(0); /* translateZ forces 3D rendering to prevent wobble */
+}
+
+/* Recreates the classic solid color background just for the page number */
+.inline-page-number {
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 4px;
+  border-radius: 10px;
+  
+  /* FIX: Perfectly centers the number vertically and horizontally */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Removes invisible top/bottom font spacing */
+  
+  /* Pulls the colored block flush with the left side of the pill */
+  margin-left: -4px; /* Set to -4px to perfectly offset the parent's 4px left padding */
+  margin-top: -2px;
+  margin-bottom: -2px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Temporary visual selection for the Source File (Standard Blue/Accent) */
+.thumb.temp-visual-select .select-box {
+  opacity: 1;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.thumb.temp-visual-select .select-box::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Temporary visual selection for Brand New Copies (Gold/Yellow) */
+.thumb.temp-new-select .select-box {
+  opacity: 1;
+  background: #ffc107; /* Warning yellow */
+  border-color: #ffc107;
+  box-shadow: 0 0 12px #ffc107;
+}
+.thumb.temp-new-select .select-box::after {
+  content: '✓';
+  color: #000; /* Black text for contrast */
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Yellow Override for Brand New Files */
+.thumb.is-new-copy.selected {
+    /* If you have a blue border on selected thumbs, this turns it yellow */
+    border-color: #ffc107 !important; 
+    box-shadow: 0 0 0 3px #ffc107 !important; 
+}
+
+.thumb.is-new-copy.selected .select-box {
+    background: #ffc107 !important;
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 8px #ffc107 !important;
+}
+
+.thumb.is-new-copy.selected .select-box::after {
+    color: #000 !important; /* Black checkmark for contrast */
+}
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 480px) {
+  .drop-hint {
+    padding: 20px 24px;
+  }
+
+  .drop-text {
+    min-width: 180px;
+    font-size: 13px;
+  }
+}

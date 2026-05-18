@@ -1,0 +1,1596 @@
+/* =========================================
+   editor.css - Styles for the Image/PDF Editor Modal
+   ========================================= */
+
+/* --- OVERLAY & CONTAINER --- */
+.image-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(5px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.image-modal-overlay.active {
+  display: flex;
+}
+
+.modal-container {
+  background: var(--bg);
+  display: flex;
+  flex-direction: row;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  width: 98vw;
+  height: 96vh;
+  max-width: 1600px;
+}
+
+/* --- HEADER --- */
+.modal-header-actions {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  z-index: 2001;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.undo-btn {
+  background: transparent;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  color: var(--fg);
+  font-size: 16px;
+  width: 40px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.undo-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.undo-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+[data-theme="dark"] .undo-btn {
+  background: #333;
+  color: #eee;
+}
+
+[data-theme="dark"] .undo-btn:hover:not(:disabled) {
+  background: #444;
+}
+
+#btnSaveToGallery {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 8px 6px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.1s background 0.2s;
+
+  min-width: 108px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* --- SAVE SPLIT BUTTON --- */
+.save-btn-group {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  margin-right: 2px;
+}
+
+#btnSaveToGallery {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#btnSaveDropdownToggle {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 0 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background 0.1s;
+  margin-right: -6px;
+}
+
+/* Update the hover block to a much nicer, standard green */
+#btnSaveToGallery:hover:not(:disabled),
+#btnSaveDropdownToggle:hover:not(:disabled) {
+  background: #218838;
+}
+
+/* Ensure the disabled state completely ignores hover effects */
+#btnSaveToGallery:disabled {
+  background: #6c757d !important;
+  cursor: not-allowed !important;
+}
+
+#btnSaveToGallery.saved {
+  background: #155724;
+  /* Keep the dark green for the momentary "Saved!" state */
+  cursor: default;
+}
+
+.save-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: var(--fg);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 3000;
+  min-width: 150px;
+}
+
+[data-theme="dark"] .save-dropdown-menu {
+  background: var(--card);
+}
+
+.save-dropdown-menu.active {
+  display: flex;
+}
+
+.save-menu-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--bg);
+  font-weight: 500;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+[data-theme="dark"] .save-menu-item {
+  color: #eee;
+}
+
+.save-menu-item:last-child {
+  border-bottom: none;
+}
+
+.save-menu-item:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* When cropping is active, hide these elements entirely */
+.is-cropping #btnSaveToGallery,
+.is-cropping .save-btn-group,
+/* Replace with your actual dropdown class */
+.is-cropping .modal-close {
+  /* Replace with your actual Close X button ID/class */
+  display: none !important;
+  pointer-events: none;
+}
+
+.modal-close {
+  margin-right: -4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.modal-close:hover {
+  transform: scale(1.1);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* --- MAIN VIEW --- */
+.modal-view {
+  flex: 1;
+  background: #E0E0E0 !important;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden !important;
+  z-index: 1;
+  transition: flex 0.3s ease;
+}
+
+[data-theme="dark"] .modal-view {
+  background: #4a4a4a !important;
+}
+
+.modal-carousel {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  position: relative;
+}
+
+.editor-page {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden !important;
+}
+
+.editor-page img {
+  max-width: 88%;
+  max-height: 90%;
+  object-fit: contain;
+  user-select: none;
+  transform-origin: center center;
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.editor-page canvas {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* --- CROP OVERLAY --- */
+.crop-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+  z-index: 100;
+  display: none;
+  cursor: move;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Grid Lines */
+.crop-grid-v,
+.crop-grid-h {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.crop-grid-v {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.crop-grid-h {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+/* Handles */
+.crop-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border: 2px solid white;
+  border-radius: 50%;
+  z-index: 101;
+}
+
+.handle-nw {
+  top: -6px;
+  left: -6px;
+  cursor: nw-resize;
+}
+
+.handle-ne {
+  top: -6px;
+  right: -6px;
+  cursor: ne-resize;
+}
+
+.handle-sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: sw-resize;
+}
+
+.handle-se {
+  bottom: -6px;
+  right: -6px;
+  cursor: se-resize;
+}
+
+.handle-n {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+
+.handle-s {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+
+.handle-w {
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+
+.handle-e {
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.crop-confirm-btn {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+/* --- SIDEBAR --- */
+.modal-sidebar {
+  width: 200px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  z-index: 500;
+  border-left: 1px solid rgba(128, 128, 128, 0.1);
+  position: relative;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+[data-theme="dark"] .modal-sidebar {
+  background: #1E1E1E;
+  border-left: 1px solid #333;
+}
+
+.sidebar-spacer {
+  flex: 1;
+  pointer-events: none;
+}
+
+.sidebar-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sidebar-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.modal-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn:hover {
+  opacity: 0.9;
+}
+
+.small-btn {
+  padding: 6px;
+  height: 34px;
+  font-size: 14px;
+  background: #e0e0e0;
+  color: #333;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.small-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.small-btn.btn-accent {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .small-btn {
+  background: #333;
+  color: #eee;
+}
+
+[data-theme="dark"] .small-btn:hover {
+  background: #444;
+}
+
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#editorInfo {
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg);
+  opacity: 0.8;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.editor-info-line {
+  line-height: 1.35;
+}
+
+.tool-info-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 98px;
+  transform: translateX(-265px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(25, 25, 25, 0.78);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+  z-index: 95;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tool-info-bar.with-nav {
+  bottom: 98px;
+}
+
+.tool-nav-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 98px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(25, 25, 25, 0.82);
+  color: #fff;
+  z-index: 96;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.tool-nav-btn {
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tool-nav-counter {
+  min-width: 48px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.export-btn-main {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.export-btn-main:hover {
+  opacity: 0.9;
+}
+
+/* --- PDF BOTTOM BAR --- */
+.editor-bottom-controls {
+  position: relative;
+  width: 100%;
+  background: #887e7e;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .editor-bottom-controls {
+  background: #121212;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.editor-bottom-controls.collapsed {
+  height: 0;
+  border-top: none;
+  overflow: visible;
+}
+
+.editor-bottom-controls.collapsed .modal-filmstrip,
+.editor-bottom-controls.collapsed .editor-slider-container {
+  display: none;
+}
+
+.modal-filmstrip {
+  height: 80px;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 10px;
+  padding: 10px;
+  scrollbar-width: none;
+  justify-content: flex-start;
+  /* Hides scrollbar for Firefox */
+  scrollbar-width: none;
+  /* Hides scrollbar for IE/Edge */
+  -ms-overflow-style: none;
+}
+
+/* ==========================================
+   FILMSTRIP THUMBNAILS & ACTIVE STATE
+   ========================================== */
+
+/* Style the individual images/canvases inside the filmstrip */
+.modal-filmstrip img,
+.modal-filmstrip canvas,
+.modal-filmstrip .filmstrip-thumb
+
+/* Add your specific thumbnail wrapper class if you have one */
+  {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.5;
+  /* Dim the inactive pages so the active one stands out! */
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  /* Invisible border to prevent layout jumping */
+  box-sizing: border-box;
+}
+
+/* Slight hover effect for inactive thumbnails */
+.modal-filmstrip img:hover,
+.modal-filmstrip canvas:hover {
+  opacity: 0.8;
+}
+
+/* THE MAGIC CLASS: This is what our Javascript adds to the current page! */
+.modal-filmstrip .active {
+  opacity: 1 !important;
+  border: 2px solid #007bff !important;
+  /* A nice blue highlight border */
+  transform: scale(1.05);
+  /* Make it pop out slightly */
+}
+
+/* Dark mode adjustment for the highlight border (optional) */
+[data-theme="dark"] .modal-filmstrip .active {
+  border-color: #4da3ff !important;
+}
+
+.filmstrip::-webkit-scrollbar {
+  display: none;
+}
+
+/* This trick centers content if it fits, but keeps start alignment if it overflows */
+.film-thumb-wrapper:first-child {
+  margin-left: auto;
+}
+
+.film-thumb-wrapper:last-child {
+  margin-right: auto;
+}
+
+.film-thumb-wrapper {
+  position: relative;
+  height: 60px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.film-thumb {
+  height: 100%;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  opacity: 0.6;
+}
+
+.film-thumb.active {
+  border-color: var(--accent);
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.film-strip-checkbox {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #fff;
+  z-index: 5;
+  opacity: 0;
+}
+
+.film-thumb-wrapper:hover .film-strip-checkbox,
+.film-thumb-wrapper.selected .film-strip-checkbox {
+  opacity: 1;
+  display: none;
+}
+
+.film-thumb-wrapper.selected .film-strip-checkbox {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--fg);
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 20;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  border-radius: 6px;
+  opacity: 1;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.nav-btn.hidden {
+  display: none !important;
+}
+
+[data-theme="dark"] .nav-btn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .nav-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.nav-btn.prev {
+  left: 8px;
+}
+
+.nav-btn.next {
+  right: 8px;
+}
+
+.editor-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 20px 10px;
+  color: white;
+  font-size: 13px;
+  font-family: monospace;
+}
+
+.page-slider {
+  flex: 1;
+  cursor: pointer;
+}
+
+.sidebar-undo-redo {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  background: transparent;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+[data-theme="dark"] .sidebar-undo-redo {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+
+
+.modal-sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  border: none;
+}
+
+.modal-sidebar.collapsed .sidebar-tools,
+.modal-sidebar.collapsed .sidebar-footer,
+.modal-sidebar.collapsed .sidebar-spacer,
+.modal-sidebar.collapsed .sidebar-undo-redo {
+  display: none;
+}
+
+/* --- DISABLED BUTTON STATE --- */
+.modal-btn:disabled,
+.small-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  /* Prevents clicks */
+  filter: grayscale(100%);
+}
+
+/* =========================================
+   1. SIDEBAR TOGGLE (Top Toolbar)
+   ========================================= */
+#toggleSidebarBtn {
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 6px;
+  margin-right: -4px;
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/* Collapsed State: Flies below the Modal Close Button */
+#toggleSidebarBtn.is-collapsed {
+  position: absolute;
+  top: 54px;
+  /* Sits right below the top header */
+  right: 5px;
+  margin-right: -6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 6px;
+}
+
+/* =========================================
+   2. BOTTOM BAR TOGGLE (Right Boundary)
+   ========================================= */
+#toggleControlsBtn {
+  position: absolute;
+  top: -18px;
+  /* Sits exactly on the top boundary of the bottom bar */
+  right: 20px;
+  /* Moved to the right edge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 18px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+  /* Makes it look like a seamless folder tab */
+  border-radius: 8px 8px 0 0;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/*#toggleControlsBtn:hover, #toggleSidebarBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}*/
+
+/* Collapsed State: Flies below the collapsed Sidebar Button */
+#toggleControlsBtn.is-collapsed {
+  position: absolute;
+  bottom: 1050px;
+  /* Stacks right below the sidebar toggle */
+  right: 15px;
+  width: 40px;
+  height: 18px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+/* =========================================
+   HIDE TOGGLES DURING TOOL USE (Crop)
+   ========================================= */
+.image-modal-overlay.tool-active #toggleSidebarBtn,
+.image-modal-overlay.tool-active #toggleControlsBtn {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* =========================================
+   FOCUS MODE: Hide Bars During Crop
+   ========================================= */
+.modal-overlay.tool-active .modal-sidebar,
+.image-modal-overlay.tool-active .modal-sidebar,
+.image-modal-overlay.tool-active #pdfControls {
+  display: none !important;
+}
+
+/* =========================================
+  CROP ACTIONS (Tick & Cross)
+   ========================================= */
+
+.crop-actions {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  gap: 15px !important;
+  z-index: 10000 !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  padding: 10px 20px !important;
+  border-radius: 40px !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.crop-actions.visible {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  animation: cropFadeIn 0.2s ease-in-out forwards;
+}
+
+/* Smooth pop-in keyframe */
+@keyframes cropFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* Tick and Cross Buttons */
+.crop-actions button {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  transition: transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  margin: 0 !important;
+  /* Prevents weird spacing */
+}
+
+.crop-actions .btn-cancel {
+  background: rgba(211, 47, 47, 0.9) !important;
+  color: white !important;
+}
+
+.crop-actions .btn-cancel:hover {
+  background: #d32f2f !important;
+  transform: scale(1.1) !important;
+}
+
+.crop-actions .btn-apply {
+  background: rgba(40, 167, 69, 0.9) !important;
+  color: white !important;
+}
+
+.crop-actions .btn-apply:hover {
+  background: #28a745 !important;
+  transform: scale(1.1) !important;
+}
+
+#btnCancelResize,
+#btnConfirmResize {
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+#btnCancelResize:hover,
+#btnConfirmResize:hover {
+  transform: scale(1.1) !important;
+}
+
+#btnConfirmCompress:hover,
+#btnCancelCompress:hover {
+  transform: scale(1.1) !important;
+}
+
+#btnConfirmCompress,
+#btnCancelCompress {
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+/* =========================================
+   FOCUS MODE: Canvas Breathing Room
+   ========================================= */
+/* Move the padding directly to the editor-page so we don't expose hidden backgrounds! */
+.image-modal-overlay.tool-active .editor-page {
+  padding: 40px 100px 40px 40px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure the image shrinks nicely inside this padded area */
+.image-modal-overlay.tool-active .editor-page img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  /* Strip any weird borders directly on the image */
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.image-modal-overlay.is-compressing .editor-page img,
+.image-modal-overlay.is-compressing .editor-page canvas {
+  max-width: 94% !important;
+  max-height: 84% !important;
+  margin: auto !important;
+}
+
+.image-modal-overlay.is-compressing .editor-page {
+  padding: 0px 40px 100px 40px !important;
+}
+
+/* Remove the padding we previously put on modal-view so it doesn't cause color clipping */
+.image-modal-overlay.tool-active .modal-view {
+  padding: 0 !important;
+}
+
+/* =========================================
+   BULLETPROOF LOCK: Hide Stray Crop Buttons
+   ========================================= */
+/* If the modal does NOT have .tool-active, completely kill the crop buttons */
+.image-modal-overlay:not(.tool-active) .crop-actions {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.tool-active .nav-btn {
+  display: none !important;
+}
+
+.tool-active .modal-close {
+  display: none !important;
+}
+
+.tool-active .save-btn-group {
+  display: none !important;
+}
+
+/* --- GRID MODE CONTAINER --- */
+.editor-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  align-content: start;
+  overflow-y: auto;
+  width: 100%;
+
+  flex: 1;
+  min-height: 0;
+}
+
+[data-theme="dark"] .editor-grid-container {
+  background: #4a4a4a;
+}
+
+/* --- BASE SCROLLBAR --- */
+.editor-grid-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-grid-container::-webkit-scrollbar-track {
+  background: rgb(198, 188, 188);
+  border-radius: 4px;
+  margin-top: 56px;
+}
+
+.editor-grid-container::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.editor-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* --- COLLAPSED STATE (Notice: NO spaces between the class names!) --- */
+.editor-grid-container.sidebar-is-collapsed {
+  width: calc(100% - 15px) !important;
+  margin-right: 15px !important;
+  /* Push the container (and scrollbar) 15px to the left */
+  padding-right: 30px;
+}
+
+.editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-track {
+  margin-top: 104px;
+  background: rgb(198, 188, 188);
+}
+
+.editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+.editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* --- DARK MODE BASE --- */
+[data-theme="dark"] .editor-grid-container::-webkit-scrollbar-track {
+  margin-top: 56px;
+  background: #7e7d7d;
+}
+
+[data-theme="dark"] .editor-grid-container::-webkit-scrollbar-thumb {
+  background: #E0E0E0;
+}
+
+[data-theme="dark"] .editor-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #373333;
+}
+
+/* --- DARK MODE COLLAPSED (NO spaces between classes) --- */
+[data-theme="dark"] .editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-track {
+  margin-top: 104px;
+  background: #7e7d7d;
+}
+
+[data-theme="dark"] .editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-thumb {
+  background: #E0E0E0;
+}
+
+[data-theme="dark"] .editor-grid-container.sidebar-is-collapsed::-webkit-scrollbar-thumb:hover {
+  background: #373333;
+}
+
+/* --- GRID ITEMS --- */
+.editor-grid-item {
+  position: relative;
+  background: #2a2a2a;
+  border-radius: 8px;
+  cursor: pointer;
+
+  width: 100%;
+
+  /* THE BULLETPROOF RECTANGLE HACK: 
+       Width is 100%, Padding-bottom is 125%. 
+       This creates an unbreakable 1:1.25 aspect ratio. */
+  padding-bottom: 115%;
+  height: 0 !important;
+  /* Force height to 0 so the padding controls the shape */
+
+  display: block;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.editor-grid-item canvas {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+
+  /* Force the canvas to be a perfect square */
+  width: calc(100% - 16px) !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1;
+
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.editor-grid-item .page-label {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #ffffff;
+  font-size: 13px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.editor-grid-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  background: #333;
+  transition: transform 0.2s ease;
+}
+
+.editor-grid-item .page-label,
+.editor-grid-item .expand-icon {
+  z-index: 10 !important;
+}
+
+.editor-grid-item.is-selected .page-label {
+  color: #000000 !important;
+  /* Change this to whatever color you want (e.g., yellow) */
+}
+
+/* --- HOVER CHECKBOX LOGIC --- */
+.editor-grid-item .select-box {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  opacity: 0;
+  /* Hidden by default */
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+/* Show checkbox when hovering the item, OR if it is checked */
+.editor-grid-item:hover .select-box,
+.editor-grid-item .select-box:checked {
+  opacity: 1;
+}
+
+/* Optional: Highlight the box when checked */
+.editor-grid-item.is-selected {
+  border: 2px solid #a09f9f;
+  background: #6d6e6ec9;
+}
+
+/* --- PILL TOGGLE CONTROL --- */
+.mode-toggle-pill {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 4px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 0px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  color: #fff;
+}
+
+.mode-btn.active {
+  background: #333;
+  /* Active background */
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .mode-btn.active {
+  background: #555;
+}
+
+/* ==========================================
+   TOAST POPUP (For Undo/Redo info)
+   ========================================== */
+#editorToast {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+/* Style and position the expand icon */
+.editor-grid-item .expand-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+  /* Hidden by default */
+}
+
+/* Show the icon when hovering over the thumbnail */
+.editor-grid-item:hover .expand-icon {
+  opacity: 1;
+}
+
+.editor-grid-item .expand-icon:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+  /* Slight pop effect */
+}
+
+.carousel-item img,
+.carousel-item canvas {
+  image-rendering: high-quality;
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* =========================================
+   EXPORT DIALOG STYLES
+   ========================================= */
+
+.export-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11000;
+}
+
+.export-dialog-container {
+  background: var(--bg);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .export-dialog-container {
+  background: #333;
+}
+
+.export-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.export-dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--fg);
+}
+
+.export-dialog-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--fg);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.export-dialog-close:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.export-dialog-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.export-section {
+  margin-bottom: 24px;
+}
+
+.export-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.export-page-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.export-radio {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.export-radio:hover {
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.export-radio input[type="radio"] {
+  margin-right: 10px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.export-radio span {
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.export-format-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.export-format-btn {
+  padding: 16px 12px;
+  border: 2px solid rgba(128, 128, 128, 0.2);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  color: var(--fg);
+}
+
+.export-format-btn:hover {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.export-format-btn.active {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.15);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.3);
+}
+
+.format-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.format-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.format-desc {
+  font-size: 12px;
+  color: rgba(var(--fg-rgb), 0.6);
+}
+
+.export-info {
+  background: rgba(128, 128, 128, 0.05);
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.export-progress-container {
+  margin-bottom: 16px;
+}
+
+.export-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--fg);
+}
+
+.export-progress-bar {
+  height: 6px;
+  background: rgba(128, 128, 128, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.export-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #4CAF50);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.export-dialog-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+  background: rgba(128, 128, 128, 0.03);
+}
+
+.export-btn-cancel,
+.export-btn-export {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn-cancel {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--fg);
+}
+
+.export-btn-cancel:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.export-btn-export {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+}
+
+.export-btn-export:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.4);
+}
+
+.export-btn-export:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .export-dialog-container {
+    width: 95%;
+    max-width: 95%;
+  }
+
+  .export-format-grid {
+    grid-template-columns: 1fr;
+  }
+}
